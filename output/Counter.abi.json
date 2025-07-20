@@ -1,0 +1,12 @@
+[{
+    "inputs":[],
+    "type":"function",
+    "name":"increment",
+    "outputs":[]
+  },{
+    "type":"event",
+    "name":"Incremented",
+    "inputs":[{
+        "type":"uint256"
+      }]
+  }]
