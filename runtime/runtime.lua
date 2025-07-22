@@ -11,6 +11,7 @@ function Runtime.signal(event_name, ...)
     name = event_name,
     args = { ... }
   })
+  Runtime.print_signals() -- Optional: print signals immediately for debugging
 end
 
 -- Used to simulate calldata inputs
@@ -37,7 +38,7 @@ end
 
 -- Optional: pretty print
 function Runtime.print_signals()
-  for i, signal in ipairs(signal_log) do
+  for i, signal in ipairs(Runtime.get_signal_log()) do
     print("[" .. i .. "] " .. signal.name .. "(", table.concat(signal.args, ", "), ")")
   end
 end
@@ -90,6 +91,13 @@ function Runtime.execute_bytecode(bytecode)
       local value = tonumber(bytecode_bytes[pc], 16)
       pc = pc + 1
       push(value)
+    elseif opcode == "7f" then -- PUSH32
+      local value = ""
+      for i = 1, 32 do
+        value = value .. bytecode_bytes[pc]
+        pc = pc + 1
+      end
+      push(tonumber(value, 16))
     elseif opcode == "54" then -- SLOAD
       local key = pop()
       push(storage[key] or 0)
@@ -104,6 +112,9 @@ function Runtime.execute_bytecode(bytecode)
     elseif opcode == "a1" then -- LOG1
       local value = pop()
       Runtime.signal("LOG1", value)
+    elseif opcode == "a0" then -- LOG0
+      local value = pop()
+      Runtime.signal("LOG0", value)
     else
       error("Unknown opcode: " .. opcode)
     end

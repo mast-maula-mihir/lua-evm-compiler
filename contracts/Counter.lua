@@ -4,8 +4,6 @@ M.storage = {
   count = 0
 }
 
-M.transient = {}
-
 M.signals = {
   Incremented = { "uint256" }
 }
